@@ -1,1 +1,1 @@
-web: pymushra server -a ["0.0.0.0"] -p $PORT
+web: pymushra -w ./webmushra/ server -a ["0.0.0.0"] -p $PORT 
