@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>The Text to Speech App</title>
+    <link rel="shortcut icon" href="/wavs/favicon.ico">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .label {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="w-full">
+        <div id="content" class="jumbotron" style="padding-top: 10px">
+            <div class="text-center">
+                <h3 class="display-7">Text To Speech Demo</h3>
+                <p class="">Vietnamese TTS model.</p>
+            </div>
+        <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <form id="config_form" name="config_form" method="POST" action="/config">
+                            <div class="form-group">
+                                <label class="label" for="select">Model</label>
+                                <select name="input_model" class="form-control">
+                                    <option value="tacotron2" {{ 'selected' if model == 'tacotron2'}}>Tacotron2</option>
+                                    <option value="fastspeech2" {{ 'selected' if model == 'fastspeech2'}}>FastSpeech2
+                                    </option>
+                                    <option value="fastpitch" {{ 'selected' if model == 'fastpitch'}}>FastPitch
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label" for="select">Level</label>
+                                <select name="input_level" class="form-control">
+                                    <option value="char" {{ 'selected' if level == 'char'}}>Character</option>
+                                    <option value="phoneme" {{ 'selected' if level == 'phoneme'}}>Phoneme
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label" for="select">Vocoder</label>
+                                <select name="input_vocoder"
+                                    class="form-control">
+                                    <option value="waveglow" {{ 'selected' if vocoder == 'waveglow'}}>WaveGlow</option>
+                                    <option value="hifigan" {{ 'selected' if vocoder == 'hifigan'}}>HifiGan</option>
+                                </select>
+                            </div>
+
+                            <div id="btnc" class="form-group">
+                                <input id="btnc" type="submit" class="btn btn-primary mb-2" value="Load model" />
+                            </div>
+
+                        </form>
+
+                        <div class="media-body text-center">
+                            {% if log %}
+                            <p class="lead">{{ log }}</p>
+                            {% endif %}
+                        </div>
+
+                        <form id="input_form" name="input_form" method="POST" action="/tts">
+                            <div class="form-group">
+                                    <input type="checkbox" id="vehicle1" name="batch_inference" value="1">
+                                    <label for="vehicle1"> Batch Inference</label><br>
+                            </div>
+
+                            <div class="form-group">
+                                <textarea class="form-control" id="text_area" name="input_text" placeholder="{{sample_text}}"
+                                    rows="2"></textarea>
+                            </div>
+
+                            <div id="btns" class="form-group">
+                                <input id="btn" type="submit" class="btn btn-primary mb-2" value="(TTS)" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <div class="media-body text-center">
+                            {% if time %}
+                            <p class="lead">{{ time[0] }}</p>
+                            <p class="lead">{{ time[1] }}</p>
+                            <p class="lead">{{ time[2] }}</p>
+                            <p class="lead">{{ time[3] }}</p>
+                            <p class="lead">{{ time[4] }}</p>
+                            <p class="lead">{{ time[5] }}</p>
+                            <p class="lead">{{ time[6] }}</p>
+                            <p class="lead">{{ time[7] }}</p>
+                            <p class="lead">{{ time[8] }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if voice %}
+                        <div class="media">
+                            <div class="media-body text-center">
+                                <p class="lead"> (Result) </p>
+
+                                <audio controls preload="auto" autoplay>
+                                    <source src="http://127.0.0.1:9999/{{voice}}" type="audio/mp3">
+                                </audio>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="warning" class="alert alert-warning" role="alert" style="display: none">
+                    (Input the texts)
+                </div>
+
+                <hr class="my-4">
+            </div>
+        </div>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(() => {
+                $("#btns").prepend('<div id="loading" style="display : none;" ><button class="btn btn-primary" type="button" disabled><span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Loading...</button></div>')
+            });
+
+
+        </script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    </div>
+</body>
+
+</html>
