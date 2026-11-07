@@ -105,3 +105,8 @@ venv.bak/
 #### TINYDB
 
 *.json
+
+# IDE
+.idea/
+# collected ratings (personal data of listeners)
+result.txt

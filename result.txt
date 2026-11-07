@@ -1,6 +1,0 @@
-cường|13|bắc|nam|01151.wav|5
-cường|13|bắc|nam|02142.wav|4
-cường|13|bắc|nam|02539.wav|5
-cường|13|bắc|nam|13234.wav|5
-cường|13|bắc|nam|13661.wav|3
-cường|13|bắc|nam|16152.wav|3
